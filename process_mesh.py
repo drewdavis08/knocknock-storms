@@ -22,7 +22,7 @@ a = src.read(1).astype('float32')
 a = np.where(a < 0, 0, a)
 t = src.transform
 polys = []
-for mm in (25, 38, 50):
+for mm in (19, 25, 32, 38, 45, 51, 64):
     mask = (a >= mm).astype('uint8')
     for geom, _ in features.shapes(mask, mask=mask > 0, transform=t):
         g = shape(geom)
