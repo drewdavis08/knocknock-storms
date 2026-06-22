@@ -1,15 +1,19 @@
 import sys, os, gzip, json, urllib.request
+from datetime import datetime, timedelta
 import rasterio, numpy as np
 from rasterio import features
 from shapely.geometry import shape, mapping
 
+# DATE is the local convective day we are labeling (SPC convention, 12Z–12Z).
+# MESH_Max_1440min valid at (DATE+1) 12:00 UTC = max over [DATE 12Z, DATE+1 12Z] = that
+# convective day. Using the old 23:30Z window pushed evening (post-00Z) storms a day late.
 DATE = sys.argv[1]
 KEY = os.environ['STORM_KEY']
 INGEST = os.environ['INGEST_URL']
-d = DATE.replace('-', '')
-base = "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/MESH_Max_1440min_00.50/%s/" % d
-fname = "MRMS_MESH_Max_1440min_00.50_%s-233000.grib2.gz" % d
-tmp = "/tmp/mesh/_w_%s.grib2" % d
+valid = (datetime.strptime(DATE, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m%d')
+base = "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/MESH_Max_1440min_00.50/%s/" % valid
+fname = "MRMS_MESH_Max_1440min_00.50_%s-120000.grib2.gz" % valid
+tmp = "/tmp/mesh/_w_%s.grib2" % DATE.replace('-', '')
 try:
     raw = urllib.request.urlopen(base + fname, timeout=90).read()
     open(tmp + '.gz', 'wb').write(raw)
