@@ -14,6 +14,7 @@ valid = (datetime.strptime(DATE, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y%m
 base = "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/MESH_Max_1440min_00.50/%s/" % valid
 fname = "MRMS_MESH_Max_1440min_00.50_%s-120000.grib2.gz" % valid
 tmp = "/tmp/mesh/_w_%s.grib2" % DATE.replace('-', '')
+os.makedirs(os.path.dirname(tmp), exist_ok=True)  # CI runners don't have /tmp/mesh
 try:
     raw = urllib.request.urlopen(base + fname, timeout=90).read()
     open(tmp + '.gz', 'wb').write(raw)
