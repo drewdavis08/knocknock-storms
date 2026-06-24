@@ -1,7 +1,9 @@
 name: daily-hail-swaths
 on:
   schedule:
-    - cron: '0 9 * * *'      # ~09:00 UTC daily, after the prior day's MESH settles
+    # 14:00 UTC daily. The 12Z→12Z convective day for date D is read from the MESH file
+    # valid 12:00 UTC on D+1, so we must run after 12Z for "yesterday" to be available.
+    - cron: '0 14 * * *'
   workflow_dispatch:
 jobs:
   ingest:
@@ -12,7 +14,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install rasterio numpy shapely
-      - name: Process recent MRMS MESH days
+      - name: Process recent MRMS MESH days (12Z convective day)
         env:
           STORM_KEY: ${{ secrets.STORM_KEY }}
           INGEST_URL: ${{ secrets.INGEST_URL }}
